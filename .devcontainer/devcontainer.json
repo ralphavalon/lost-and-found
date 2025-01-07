@@ -1,0 +1,42 @@
+{
+	"name": "Demo project",
+	"dockerFile": "Dockerfile",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.shell.linux": "/bin/bash",
+				"java.jdt.ls.java.home": "/usr/lib/jvm/msopenjdk-current",
+				"java.configuration.runtimes": [
+					{
+						"name": "JavaSE-21",
+						"path": "/usr/lib/jvm/msopenjdk-current",
+						"default": true
+					}
+				]
+			},
+			"extensions": [
+				"vscjava.vscode-java-pack",
+				"vscjava.vscode-lombok",
+				"vmware.vscode-boot-dev-pack"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/java:1": {
+			"version": "none",
+			"installGradle": "true",
+			"installMaven": "true"
+		}
+	},
+	// Add the IDs of extensions you want installed when the container is created.
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [
+		8080
+	],
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "mvn dependency:copy-dependencies",
+	// Uncomment to run as root instead.
+	"remoteUser": "root"
+
+	// https://github.com/microsoft/vscode-remote-try-java/blob/main/.devcontainer/devcontainer.json
+}
