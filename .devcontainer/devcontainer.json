@@ -1,5 +1,5 @@
 {
-	"name": "Demo project",
+	"name": "Lost And Found",
 	"dockerFile": "Dockerfile",
 	"customizations": {
 		"vscode": {
@@ -17,14 +17,15 @@
 			"extensions": [
 				"vscjava.vscode-java-pack",
 				"vscjava.vscode-lombok",
-				"vmware.vscode-boot-dev-pack"
+				"vmware.vscode-boot-dev-pack",
+				"redhat.vscode-xml"
 			]
 		}
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/java:1": {
 			"version": "none",
-			"installGradle": "true",
+			"installGradle": "false",
 			"installMaven": "true"
 		}
 	},
