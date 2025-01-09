@@ -9,6 +9,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import com.demo.project.exceptions.FileProcessingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -66,6 +67,15 @@ public class GlobalExceptionHandler {
     log.error(e.getMessage(), e);
     var error = "Invalid Request";
     var message = "Unacceptable request body";
+    return errorMessage(error, message);
+  }
+
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  @ExceptionHandler(MaxUploadSizeExceededException.class)
+  public ErrorMessage handleMaxSizeException(MaxUploadSizeExceededException exc) {
+    log.error(exc.getMessage(), exc);
+    var error = "Invalid Request";
+    var message = "File too large!";
     return errorMessage(error, message);
   }
 
