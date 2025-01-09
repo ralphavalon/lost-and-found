@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class CsvParser implements LostItemParser<InputStream> {
+public class CsvParser implements LostItemParser {
 
   @Override
   public List<LostItem> parse(InputStream input) {
