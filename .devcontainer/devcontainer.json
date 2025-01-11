@@ -1,6 +1,11 @@
 {
 	"name": "Lost And Found",
-	"dockerFile": "Dockerfile",
+	// "dockerFile": "Dockerfile",
+	"dockerComposeFile": [
+		"../docker-compose-vscode.yml"
+	],
+	"service": "backend",
+	"workspaceFolder": "/workspace",
 	"customizations": {
 		"vscode": {
 			"settings": {
@@ -32,12 +37,12 @@
 	// Add the IDs of extensions you want installed when the container is created.
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [
+		1080,
 		8080
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "mvn dependency:copy-dependencies",
 	// Uncomment to run as root instead.
 	"remoteUser": "root"
-
 	// https://github.com/microsoft/vscode-remote-try-java/blob/main/.devcontainer/devcontainer.json
 }

@@ -6,11 +6,13 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,11 +35,15 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.demo.project.config.security.SecurityConfig;
 import com.demo.project.model.LostItem;
+import com.demo.project.model.User;
 import com.demo.project.parser.LostItemParser;
+import com.demo.project.service.LostItemService;
+import com.demo.project.utils.LostItemUtils;
+import com.demo.project.utils.UserUtils;
 
 @SpringBootTest
 @Import({ SecurityConfig.class })
-@WithMockUser(username = "admin", roles = {"ADMIN"})
+@WithMockUser(username = "admin", roles = { "ADMIN" })
 public class AdminControllerTest {
 
   private MockMvc mockMvc;
@@ -47,6 +53,9 @@ public class AdminControllerTest {
 
   @MockitoBean
   private LostItemParser lostItemParser;
+
+  @MockitoBean
+  private LostItemService lostItemService;
 
   @BeforeEach
   public void setup() {
@@ -65,7 +74,6 @@ public class AdminControllerTest {
 
     String response = mockMvc.perform(multipart("/admin/upload")
         .file(file)
-        // .header("Authorization","Basic YWRtaW46cGFzc3dvcmQ=")
         .contentType(MediaType.MULTIPART_FORM_DATA))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
@@ -120,6 +128,38 @@ public class AdminControllerTest {
     JSONAssert.assertEquals(expectedResponse, response, true);
 
     verify(lostItemParser).parse(any(InputStream.class));
+  }
+
+  @DisplayName("Should show all lost items")
+  @Test
+  public void shouldShowAllLostItems() throws Exception {
+    List<User> claimedBy = Arrays.asList(UserUtils.user(1L, "name1"), UserUtils.user(2L, "name2"));
+    LostItem lostItem = LostItemUtils.lostItemWithClaimedBy(claimedBy);
+    doReturn(Arrays.asList(lostItem)).when(lostItemService).getAllLostItems();
+
+    String response = mockMvc.perform(get("/admin/items"))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+
+    String expectedResponse = """
+        [{
+          "id": "##lostItemId##",
+          "itemName": "itemName",
+          "quantity": 2,
+          "place": "place",
+          "claimedBy": [{
+            "id": 1,
+            "name": "name1"
+          },{
+            "id": 2,
+            "name": "name2"
+          }]
+        }]
+        """.replace("##lostItemId##", lostItem.getId().toString());
+
+    JSONAssert.assertEquals(expectedResponse, response, true);
+
+    verify(lostItemService).getAllLostItems();
   }
 
   static Stream<Arguments> invalidCSV() {

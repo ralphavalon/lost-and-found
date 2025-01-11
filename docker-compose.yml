@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  mockserver:
+    image: mockserver/mockserver:latest
+    ports:
+      - "1080:1080"
+    environment:
+      MOCKSERVER_WATCH_INITIALIZATION_JSON: "true"
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/expectation.json
+    volumes:
+      - ./mock:/config
+    network_mode: bridge

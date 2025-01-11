@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,6 +16,7 @@ import com.demo.project.controller.admin.response.ProcessedFileResponse;
 import com.demo.project.exceptions.FileProcessingException;
 import com.demo.project.model.LostItem;
 import com.demo.project.parser.LostItemParser;
+import com.demo.project.service.LostItemService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminController {
 
   private final LostItemParser lostItemParser;
+  private final LostItemService lostItemService;
 
   @PostMapping(value = "/upload")
   public ResponseEntity<ProcessedFileResponse> processFile(@RequestParam("file") MultipartFile file) {
@@ -37,6 +40,7 @@ public class AdminController {
 
     try {
       lostItems = lostItemParser.parse(file.getInputStream());
+      lostItems.forEach(lostItemService::registerLostItem);
     } catch (RuntimeException | IOException e) {
       log.error(e.getMessage(), e);
       throw new FileProcessingException(e.getMessage());
@@ -45,6 +49,11 @@ public class AdminController {
     return ResponseEntity.ok(ProcessedFileResponse.builder()
         .processedRecords(lostItems.size())
         .build());
+  }
+
+  @GetMapping(value = "/items")
+  public ResponseEntity<List<LostItem>> getItems() {
+    return ResponseEntity.ok(lostItemService.getAllLostItems());
   }
 
   private boolean isValid(MultipartFile file) {

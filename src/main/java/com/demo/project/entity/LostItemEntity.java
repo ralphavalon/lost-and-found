@@ -1,12 +1,10 @@
 package com.demo.project.entity;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "lost_item")
+@Table(name = "lost_items")
 public class LostItemEntity {
 
   @Id
@@ -40,14 +38,11 @@ public class LostItemEntity {
 
   private String place;
 
-  @CreatedDate
-  private LocalDateTime createdDate;
-
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-    name = "lost_item_users",
+    name = "lost_items_users",
     joinColumns = @JoinColumn(name = "lost_item_id"),
-    inverseJoinColumns = @JoinColumn(name = "claimer_id"))
-  private List<LostItemUserEntity> claimedBy;
+    inverseJoinColumns = @JoinColumn(name = "user_id"))
+  private final List<LostItemUserEntity> claimedBy = new ArrayList<>();
 
 }

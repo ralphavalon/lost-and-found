@@ -1,0 +1,17 @@
+[
+  {
+    "httpRequest": {
+      "method": "GET",
+      "path": "/users/{id}",
+      "pathParameters": {
+        "id": "[0-9]+"
+      }
+    },
+    "httpResponseTemplate": {
+      "template": "{ \"statusCode\": 200,
+      \"headers\": { \"Content-Type\": \"application/json\"  },
+      \"body\": { \"id\": \"$request.pathParameters.id[0]\", \"name\": \"Random Name $request.pathParameters.id[0]\" } }",
+      "templateType": "VELOCITY"
+    }
+  }
+]

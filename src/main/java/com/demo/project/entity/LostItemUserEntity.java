@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "lost_item_user")
+@Table(name = "lost_items_users")
 public class LostItemUserEntity {
 
   @Id

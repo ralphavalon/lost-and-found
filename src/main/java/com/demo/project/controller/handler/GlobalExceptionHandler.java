@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import com.demo.project.exceptions.ExternalCallException;
 import com.demo.project.exceptions.FileProcessingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import feign.FeignException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -29,6 +31,15 @@ public class GlobalExceptionHandler {
     log.error(e.getMessage(), e);
     var error = "Internal Server Error";
     var message = "Unexpected server error";
+    return errorMessage(error, message);
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(ExternalCallException.class)
+  public ErrorMessage exception(ExternalCallException e) {
+    log.error(e.getMessage(), e);
+    var error = "Internal Server Error";
+    var message = e.getMessage();
     return errorMessage(error, message);
   }
 
