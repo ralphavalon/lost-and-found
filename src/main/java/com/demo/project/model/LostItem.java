@@ -6,7 +6,6 @@ import java.util.UUID;
 import com.demo.project.entity.LostItemEntity;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -17,7 +16,6 @@ import lombok.Data;
 @Builder
 public class LostItem {
 
-  @NotNull
   private UUID id;
   @NotBlank
   @Pattern(regexp = "^[A-Za-z0-9çÇÑøßåâäàáÄÅéÉêëèìïíîñòóôöÖúùüÜû &'()+,\\-.]*$", message = "must have valid characters")
