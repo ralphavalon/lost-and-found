@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.demo.project.controller.admin.response.AdminLostItemResponse;
 import com.demo.project.controller.admin.response.ProcessedFileResponse;
 import com.demo.project.exceptions.FileProcessingException;
 import com.demo.project.model.LostItem;
@@ -54,12 +55,12 @@ public class AdminController {
   }
 
   @GetMapping(value = "/items")
-  public ResponseEntity<List<LostItem>> getItems() {
+  public ResponseEntity<List<AdminLostItemResponse>> getItems() {
     List<LostItem> allLostItems = lostItemService.getAllLostItems();
     allLostItems.forEach(
       lostItem -> lostItem.setClaimedBy(userService.getAllUsersNames(lostItem))
     );
-    return ResponseEntity.ok(allLostItems);
+    return ResponseEntity.ok(allLostItems.stream().map(AdminLostItemResponse::fromModel).toList());
   }
 
   private boolean isValid(MultipartFile file) {

@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
@@ -38,11 +39,15 @@ public class LostItemEntity {
 
   private String place;
 
-  @ManyToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinTable(
     name = "lost_items_users",
     joinColumns = @JoinColumn(name = "lost_item_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
   private final List<LostItemUserEntity> claimedBy = new ArrayList<>();
+
+  public void addClaimer(LostItemUserEntity claimer) {
+    claimedBy.add(claimer);
+  }
 
 }

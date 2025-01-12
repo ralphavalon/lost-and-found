@@ -41,6 +41,6 @@ public class LostItemUserEntity {
 
   @Column(name = "quantity_claimed")
   @Positive
-  private int quantityClaimed;
+  private Integer quantityClaimed;
 
 }

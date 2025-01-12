@@ -1,4 +1,4 @@
-package com.demo.project.controller.admin.response;
+package com.demo.project.controller.response;
 
 import java.util.UUID;
 

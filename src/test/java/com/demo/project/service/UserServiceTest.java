@@ -22,6 +22,7 @@ import com.demo.project.client.UserClient;
 import com.demo.project.exceptions.ExternalCallException;
 import com.demo.project.model.LostItem;
 import com.demo.project.model.User;
+import com.demo.project.repository.UserRepository;
 import com.demo.project.utils.LostItemUtils;
 
 import feign.FeignException.FeignClientException;
@@ -35,6 +36,9 @@ public class UserServiceTest {
 
   @MockitoSpyBean
   private UserService userService;
+
+  @MockitoBean
+  private UserRepository userRepository;
 
   @MockitoBean
   private UserClient userClient;

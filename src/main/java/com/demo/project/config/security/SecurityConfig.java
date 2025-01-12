@@ -30,7 +30,13 @@ public class SecurityConfig {
         .roles("USER")
         .build();
 
-    return new InMemoryUserDetailsManager(admin, user);
+    UserDetails userTwo = User.withDefaultPasswordEncoder()
+        .username("userTwo")
+        .password("password")
+        .roles("USER")
+        .build();
+
+    return new InMemoryUserDetailsManager(admin, user, userTwo);
   }
 
   @Bean
