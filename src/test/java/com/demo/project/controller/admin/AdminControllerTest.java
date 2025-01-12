@@ -1,6 +1,7 @@
 package com.demo.project.controller.admin;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,7 @@ import com.demo.project.model.LostItem;
 import com.demo.project.model.User;
 import com.demo.project.parser.LostItemParser;
 import com.demo.project.service.LostItemService;
+import com.demo.project.service.UserService;
 import com.demo.project.utils.LostItemUtils;
 import com.demo.project.utils.UserUtils;
 
@@ -56,6 +58,9 @@ public class AdminControllerTest {
 
   @MockitoBean
   private LostItemService lostItemService;
+
+  @MockitoBean
+  private UserService userService;
 
   @BeforeEach
   public void setup() {
@@ -85,6 +90,8 @@ public class AdminControllerTest {
     JSONAssert.assertEquals(expectedResponse, response, true);
 
     verify(lostItemParser).parse(any(InputStream.class));
+    verify(lostItemService).registerLostItem(any(LostItem.class));
+    verifyNoInteractions(userService);
   }
 
   @DisplayName("Should not upload invalid file")
@@ -106,6 +113,8 @@ public class AdminControllerTest {
     JSONAssert.assertEquals(expectedResponse, response, true);
 
     verifyNoInteractions(lostItemParser);
+    verifyNoInteractions(lostItemService);
+    verifyNoInteractions(userService);
   }
 
   @DisplayName("Should return error message if processing fails")
@@ -130,12 +139,13 @@ public class AdminControllerTest {
     verify(lostItemParser).parse(any(InputStream.class));
   }
 
-  @DisplayName("Should show all lost items")
+  @DisplayName("Should show all lost items with claimedBy")
   @Test
   public void shouldShowAllLostItems() throws Exception {
     List<User> claimedBy = Arrays.asList(UserUtils.user(1L, "name1"), UserUtils.user(2L, "name2"));
     LostItem lostItem = LostItemUtils.lostItemWithClaimedBy(claimedBy);
     doReturn(Arrays.asList(lostItem)).when(lostItemService).getAllLostItems();
+    doReturn(claimedBy).when(userService).getAllUsersNames(any(LostItem.class));
 
     String response = mockMvc.perform(get("/admin/items"))
         .andExpect(status().isOk())
@@ -160,6 +170,7 @@ public class AdminControllerTest {
     JSONAssert.assertEquals(expectedResponse, response, true);
 
     verify(lostItemService).getAllLostItems();
+    verify(userService).getAllUsersNames(eq(lostItem));
   }
 
   static Stream<Arguments> invalidCSV() {

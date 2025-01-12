@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 public class LostItemService {
 
   private final LostItemRepository repository;
-  private final UserService userService;
 
   public void registerLostItem(LostItem lostItem) {
     repository.save(lostItem.toEntity());
@@ -24,13 +23,13 @@ public class LostItemService {
 
   public List<LostItem> getAllLostItems() {
     return repository.findAll().stream().map(lostItemEntity -> {
-      return LostItem.fromEntity(lostItemEntity, getAllUsersNames(lostItemEntity));
+      return LostItem.fromEntity(lostItemEntity, parseUser(lostItemEntity));
     }).toList();
   }
 
-  private List<User> getAllUsersNames(LostItemEntity lostItemEntity) {
+  private List<User> parseUser(LostItemEntity lostItemEntity) {
     return lostItemEntity.getClaimedBy().stream().map(
-      claimedItem -> userService.getUser(claimedItem.getUser().getId())
+      claimedItem -> User.fromEntity(claimedItem.getUser())
     ).toList();
   }
 

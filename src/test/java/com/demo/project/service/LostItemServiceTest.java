@@ -1,9 +1,7 @@
 package com.demo.project.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -64,14 +62,9 @@ public class LostItemServiceTest {
         podamFactory.manufacturePojo(LostItemEntity.class));
     doReturn(lostItems).when(lostItemRepository).findAll();
 
-    User userOne = User.builder().id(1L).name("User One").build();
-    User userTwo = User.builder().id(2L).name("User Two").build();
-    doReturn(userOne, userTwo).when(userService).getUser(anyLong());
-
     List<LostItem> resultAllLostItems = lostItemService.getAllLostItems();
 
     verify(lostItemRepository).findAll();
-    verify(userService, times(lostItems.get(0).getClaimedBy().size())).getUser(anyLong());
 
     LostItem resultLostItem = resultAllLostItems.get(0);
     LostItemEntity lostItemEntity = lostItems.get(0);
@@ -81,7 +74,7 @@ public class LostItemServiceTest {
     assertThat(resultLostItem.getClaimedBy().size()).isEqualTo(lostItems.get(0).getClaimedBy().size());
     for (int i = 0; i < resultLostItem.getClaimedBy().size(); i++) {
       User user = resultLostItem.getClaimedBy().get(i);
-      assertThat(user.getName()).isIn(userOne.getName(), userTwo.getName());
+      assertThat(user.getName()).isNull();
     }
   }
 

@@ -15,7 +15,6 @@ import com.demo.project.exceptions.ExternalCallException;
 import com.demo.project.exceptions.FileProcessingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import feign.FeignException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;

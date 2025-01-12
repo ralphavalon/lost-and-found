@@ -17,6 +17,7 @@ import com.demo.project.exceptions.FileProcessingException;
 import com.demo.project.model.LostItem;
 import com.demo.project.parser.LostItemParser;
 import com.demo.project.service.LostItemService;
+import com.demo.project.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,7 @@ public class AdminController {
 
   private final LostItemParser lostItemParser;
   private final LostItemService lostItemService;
+  private final UserService userService;
 
   @PostMapping(value = "/upload")
   public ResponseEntity<ProcessedFileResponse> processFile(@RequestParam("file") MultipartFile file) {
@@ -53,7 +55,11 @@ public class AdminController {
 
   @GetMapping(value = "/items")
   public ResponseEntity<List<LostItem>> getItems() {
-    return ResponseEntity.ok(lostItemService.getAllLostItems());
+    List<LostItem> allLostItems = lostItemService.getAllLostItems();
+    allLostItems.forEach(
+      lostItem -> lostItem.setClaimedBy(userService.getAllUsersNames(lostItem))
+    );
+    return ResponseEntity.ok(allLostItems);
   }
 
   private boolean isValid(MultipartFile file) {

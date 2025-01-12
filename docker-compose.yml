@@ -1,6 +1,14 @@
 version: "3.8"
 
 services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - ./src/main/resources:/app/resources
   mockserver:
     image: mockserver/mockserver:latest
     ports:
@@ -10,4 +18,3 @@ services:
       MOCKSERVER_INITIALIZATION_JSON_PATH: /config/expectation.json
     volumes:
       - ./mock:/config
-    network_mode: bridge
