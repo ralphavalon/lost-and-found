@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -75,7 +76,7 @@ public class AdminControllerTest {
     MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv",
         "abc,1,bca".getBytes());
 
-    doReturn(Arrays.asList(LostItem.builder().build())).when(lostItemParser).parse(any(InputStream.class));
+    doReturn(Arrays.asList(LostItemUtils.lostItemWithoutClaimedBy())).when(lostItemParser).parse(any(InputStream.class));
 
     String response = mockMvc.perform(multipart("/admin/upload")
         .file(file)
@@ -113,6 +114,36 @@ public class AdminControllerTest {
     JSONAssert.assertEquals(expectedResponse, response, true);
 
     verifyNoInteractions(lostItemParser);
+    verifyNoInteractions(lostItemService);
+    verifyNoInteractions(userService);
+  }
+
+  @DisplayName("Should not upload file with wrong parameters")
+  @ParameterizedTest
+  @MethodSource("invalidParameters")
+  public void shouldNotUploadInvalidFileWithWrongParameters(String csvContent) throws Exception {
+    MockMultipartFile file = new MockMultipartFile("file", "test.csv", "text/csv",
+        csvContent.getBytes());
+
+    doReturn(Arrays.asList(LostItem.builder()
+        .itemName(csvContent.split(",")[0])
+        .quantity(Integer.parseInt(csvContent.split(",")[1]))
+        .place(csvContent.split(",")[2])
+        .build())).when(lostItemParser).parse(any(InputStream.class));
+
+    String response = mockMvc.perform(multipart("/admin/upload")
+        .file(file)
+        .contentType(MediaType.MULTIPART_FORM_DATA))
+        .andExpect(status().isBadRequest())
+        .andReturn().getResponse().getContentAsString();
+
+    String expectedResponse = """
+        { "error": "Invalid Request", "message": "Invalid Field(s)" }
+        """;
+
+    JSONAssert.assertEquals(expectedResponse, response, false);
+
+    verify(lostItemParser).parse(any(InputStream.class));
     verifyNoInteractions(lostItemService);
     verifyNoInteractions(userService);
   }
@@ -179,6 +210,14 @@ public class AdminControllerTest {
         Arguments.of("test.pdf", "text/pdf"),
         Arguments.of("test.csv", "text/pdf"),
         Arguments.of("test.csv", "application/csv"));
+  }
+
+  static Stream<Arguments> invalidParameters() {
+    return Stream.of(
+        Arguments.of("<string>,2,</string>"),
+        Arguments.of("abc,-1,abc"),
+        Arguments.of("abc,0,abc"),
+        Arguments.of(StringUtils.repeat("a", 101) + ",1," + StringUtils.repeat("a", 101)));
   }
 
 }

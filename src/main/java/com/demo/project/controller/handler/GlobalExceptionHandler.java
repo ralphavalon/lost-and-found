@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import com.demo.project.exceptions.ArgumentNotValidException;
 import com.demo.project.exceptions.ExternalCallException;
 import com.demo.project.exceptions.FileProcessingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -85,6 +86,18 @@ public class GlobalExceptionHandler {
     var invalidFieldMessage = new HashMap<String, String>();
     e.getBindingResult().getFieldErrors()
         .forEach(error -> invalidFieldMessage.put(error.getField(), error.getDefaultMessage()));
+    var error = "Invalid Request";
+    var message = "Invalid Field(s)";
+    return errorMessage(error, message, invalidFieldMessage);
+  }
+
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler(ArgumentNotValidException.class)
+  public ErrorMessage notValid(ArgumentNotValidException e) {
+    log.error(e.getMessage(), e);
+    var invalidFieldMessage = new HashMap<String, String>();
+    e.getViolations()
+        .forEach(error -> invalidFieldMessage.put(error.getPropertyPath().toString() ,error.getMessage()));
     var error = "Invalid Request";
     var message = "Invalid Field(s)";
     return errorMessage(error, message, invalidFieldMessage);

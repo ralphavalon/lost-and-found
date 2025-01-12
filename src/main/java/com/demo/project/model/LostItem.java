@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
@@ -19,12 +20,14 @@ public class LostItem {
   @NotNull
   private UUID id;
   @NotBlank
-  @Pattern(regexp = "^[A-Za-z0-9çÇÑøßåâäàáÄÅéÉêëèìïíîñòóôöÖúùüÜû &'()+,\\-.]*$")
+  @Pattern(regexp = "^[A-Za-z0-9çÇÑøßåâäàáÄÅéÉêëèìïíîñòóôöÖúùüÜû &'()+,\\-.]*$", message = "must have valid characters")
+  @Size(max = 100)
   private String itemName;
   @Positive
   private int quantity;
   @NotBlank
-  @Pattern(regexp = "^[A-Za-z0-9çÇÑøßåâäàáÄÅéÉêëèìïíîñòóôöÖúùüÜû &'()+,\\-.]*$")
+  @Pattern(regexp = "^[A-Za-z0-9çÇÑøßåâäàáÄÅéÉêëèìïíîñòóôöÖúùüÜû &'()+,\\-.]*$", message = "must have valid characters")
+  @Size(max = 100)
   private String place;
   private List<User> claimedBy;
 
