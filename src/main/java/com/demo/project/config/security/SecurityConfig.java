@@ -45,13 +45,9 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/admin/**").hasRole("ADMIN")
-            .requestMatchers("/h2-console/**").permitAll()
-            .requestMatchers("/favicon.ico").permitAll()
             .anyRequest().authenticated())
         .httpBasic(withDefaults());
 
-    // TODO: Remove
-    http.headers().frameOptions().disable();
     return http.build();
   }
 
