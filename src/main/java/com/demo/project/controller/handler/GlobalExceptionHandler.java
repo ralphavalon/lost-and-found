@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.demo.project.exceptions.ExternalCallException;
 import com.demo.project.exceptions.FileProcessingException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -33,6 +35,15 @@ public class GlobalExceptionHandler {
     return errorMessage(error, message);
   }
 
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler({ NoResourceFoundException.class, EntityNotFoundException.class })
+  public ErrorMessage notFound(Exception e) {
+    log.error(e.getMessage(), e);
+    var error = "Cannot find resource";
+    var message = e.getMessage();
+    return errorMessage(error, message);
+  }
+
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(ExternalCallException.class)
   public ErrorMessage exception(ExternalCallException e) {
@@ -47,6 +58,14 @@ public class GlobalExceptionHandler {
   public ErrorMessage fileProcessingException(FileProcessingException e) {
     log.error(e.getMessage(), e);
     var error = "Error processing file";
+    return errorMessage(error, e.getMessage());
+  }
+
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ErrorMessage illegalArgumentException(IllegalArgumentException e) {
+    log.error(e.getMessage(), e);
+    var error = "Argument error";
     return errorMessage(error, e.getMessage());
   }
 

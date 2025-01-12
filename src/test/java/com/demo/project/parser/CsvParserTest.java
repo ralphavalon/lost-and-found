@@ -21,14 +21,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.demo.project.model.LostItem;
+import com.demo.project.utils.LostItemUtils;
 import com.opencsv.exceptions.CsvRuntimeException;
-
-import uk.co.jemos.podam.api.PodamFactory;
-import uk.co.jemos.podam.api.PodamFactoryImpl;
 
 public class CsvParserTest {
 
-  private static PodamFactory podamFactory = new PodamFactoryImpl();
   private CsvParser csvParser;
 
   @BeforeEach
@@ -86,18 +83,18 @@ public class CsvParserTest {
 
   static Stream<List<LostItem>> randomLostItems() {
     return Stream.of(
-        Arrays.asList(createRandomLostItem()),
-        Arrays.asList(createRandomLostItem(), createRandomLostItem()),
-        Arrays.asList(createRandomLostItem(), createRandomLostItem(), createRandomLostItem(), createRandomLostItem(),
-            createRandomLostItem()));
+        Arrays.asList(createLostItem()),
+        Arrays.asList(createLostItem(), createLostItem()),
+        Arrays.asList(createLostItem(), createLostItem(), createLostItem(), createLostItem(),
+            createLostItem()));
   }
 
   static Stream<String> invalidCSV() {
     return Stream.of(",", ",,", ",,,", "abc,abc,abc");
   }
 
-  private static LostItem createRandomLostItem() {
-    return podamFactory.manufacturePojo(LostItem.class);
+  private static LostItem createLostItem() {
+    return LostItemUtils.lostItemWithoutClaimedBy();
   }
 
 }
